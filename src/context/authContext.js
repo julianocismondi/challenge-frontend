@@ -1,4 +1,4 @@
-import axios from "axios";
+import ClientAxios from "@/config/clientAxios";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
@@ -8,12 +8,14 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider = ({ children }) => {
   var initialState = {
     UserId: "",
+    Name: "",
     Email: "",
     Role: "",
     Authenticate: false,
   };
   const [loading, setLoading] = useState(true);
   const [auth, setAuth] = useState(initialState);
+  const [updateToken, setUpdateToken] = useState(false);
 
   useEffect(() => {
     const authUser = async () => {
@@ -31,14 +33,16 @@ export const AuthProvider = ({ children }) => {
       };
 
       try {
-        const { data } = await axios.get(
-          "https://localhost:7024/Auth/GetProfile",
-          config
-        );
-        const { id, email, role } = data;
-        setAuth({ UserId: id, Email: email, Role: role, Authenticate: true });
-        // navigate("/admin");
-        // setUserAuth(data);
+        const { data } = await ClientAxios("/Auth/GetProfile", config);
+
+        const { id, name, email, role } = data;
+        setAuth({
+          UserId: id,
+          Name: name,
+          Email: email,
+          Role: role,
+          Authenticate: true,
+        });
       } catch (error) {
         setAuth(initialState);
       } finally {
@@ -47,10 +51,12 @@ export const AuthProvider = ({ children }) => {
     };
 
     authUser();
-  }, []);
+  }, [updateToken]);
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth, loading, initialState }}>
+    <AuthContext.Provider
+      value={{ auth, setAuth, loading, initialState, setUpdateToken }}
+    >
       {children}
     </AuthContext.Provider>
   );

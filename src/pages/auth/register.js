@@ -1,8 +1,8 @@
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import ClientAxios from "@/config/clientAxios";
 
 export default function Register() {
   const { push } = useRouter();
@@ -14,6 +14,13 @@ export default function Register() {
   });
 
   const [showPass, setShowPass] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    if (token) {
+      push("/");
+    }
+  }, []);
 
   const handleChange = (e) => {
     setRegister({ ...register, [e.target.name]: e.target.value });
@@ -45,10 +52,7 @@ export default function Register() {
     };
 
     try {
-      const response = await axios.post(
-        "https://localhost:7024/User/CreateUser",
-        objUser
-      );
+      const response = await ClientAxios.post("/User/CreateUser", objUser);
 
       if (response.status == 204) {
         push("/auth/login");
@@ -59,8 +63,8 @@ export default function Register() {
     }
   };
   return (
-    <div className="w-full h-screen flex justify-center items-center">
-      <div className="grid grid-cols-1 w-[90%] md:w-3/5 lg:w-2/6 md:mx-auto">
+    <div className=" sm w-full h-screen flex justify-center items-center">
+      <div className="grid grid-cols-1 w-[80%] sm:w-4/6 md:w-1/2 lg:w-2/6">
         <div className="flex flex-col justify-center items-center">
           <div className="w-full">
             <h1 className="text-black font-bold text-4xl md:text-5xl text-center py-4">
@@ -91,7 +95,7 @@ export default function Register() {
                     type="email"
                     name="email"
                     id="email"
-                    placeholder="tucorreo@gmail.com"
+                    placeholder="Ingrese su correo"
                     className="w-full p-2 border border-red-700 rounded-md placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-700"
                     onChange={handleChange}
                   />
@@ -163,21 +167,23 @@ export default function Register() {
                 <input
                   type="submit"
                   value="Registrarse"
-                  className="text-slate-200 border bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700 rounded-md w-full py-2 transition-colors"
+                  className="text-slate-200 border bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700 rounded-md w-full py-2 transition-colors cursor-pointer"
                 />
               </div>
             </form>
-            <nav>
-              <Link
-                className="block text-slate-800 text-center my-2 text-sm"
-                href="/auth/login"
-              >
-                ¿Ya estás registrado?{" "}
-                <span className="text-red-700 font-medium hover:underline">
-                  Inicia Sesión
-                </span>
-              </Link>
-            </nav>
+            <div>
+              <div className="flex justify-center">
+                <div className="flex items-center">
+                  <p className="mr-1">¿Ya estás registrado?</p>
+                  <Link
+                    className="text-red-700 font-medium hover:underline"
+                    href="/auth/login"
+                  >
+                    Inicia Sesión
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

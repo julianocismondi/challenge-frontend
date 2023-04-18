@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useAuth } from "@/context/authContext";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import Button from "./button";
 
 export default function Navbar() {
-  const { auth, setAuth, initialState } = useAuth();
-  const router = useRouter();
+  const { auth, setAuth, initialState, setUpdateToken } = useAuth();
+  const { push } = useRouter();
   const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {}, []);
@@ -14,7 +14,9 @@ export default function Navbar() {
   const handleCloseSesion = () => {
     localStorage.clear();
     setAuth(initialState);
-    router.push("/");
+    setUpdateToken(false);
+    setNavOpen(false);
+    push("/");
   };
 
   const navBarTransparentClass =
@@ -23,31 +25,37 @@ export default function Navbar() {
   const handleClick = () => setNavOpen(!navOpen);
   return (
     <>
-      <div className="w-full h-16 bg-zinc-100 z-30 duration-300">
+      <div className="w-full h-20 bg-gray-800 z-30 duration-300">
         <div className="px-6 sm:px-4 md:px-6 flex justify-between items-center w-full h-full">
           <div className="flex items-center">
             <h1
               className="text-3xl font-bold mr-4 sm:text-4xl hover:cursor-pointer"
-              onClick={()=>{router.push("/")}}
+              onClick={() => {
+                setNavOpen(false);
+                push("/");
+              }}
             >
-              <span className="text-black">Challenge</span>
+              <span className="text-white">Challenge</span>
             </h1>
           </div>
 
-          <div className="hidden md:flex pr-4">
+          <div className="hidden sm:flex">
             {auth.Authenticate ? (
               <>
                 {auth.Role === "Admin" ? (
-                  <Link
-                    href="/admin/dashboard"
-                    className="bg-transparent border border-blue-600 rounded-md text-blue-600 py-2 px-8 mr-2 hover:bg-transparent"
-                  >
-                    Dashboard
-                  </Link>
+                  <>
+                    <Button
+                      className="mr-2"
+                      name="Dasboard"
+                      href="/admin/dashboard"
+                      type="secondary-solid"
+                    />
+                    <div className="px-2"></div>
+                  </>
                 ) : null}
                 <button
                   href="#"
-                  className="bg-red-600 border border-red-600 rounded-md text-zinc-100 py-2 px-8 hover:bg-transparent hover:text-red-600"
+                  className="bg-red-600 border-2 border-red-600 rounded-md text-white font-medium py-2 px-8 hover:bg-transparent hover:text-red-600"
                   onClick={handleCloseSesion}
                 >
                   Cerrar Sesión
@@ -55,84 +63,66 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link
-                  className="bg-transparent border border-gray-900 rounded-md py-2 px-8 mr-4"
+                <Button
+                  name="Acceder"
                   href="/auth/login"
-                >
-                  {" "}
-                  Acceder
-                </Link>
-                <Link
-                  className="bg-red-600 border border-red-600 rounded-md text-zinc-100 py-2 px-8 hover:bg-transparent hover:text-red-600"
+                  type="secondary-solid"
+                />
+                <div className="px-2"></div>
+                <Button
+                  name="Registrarse"
                   href="/auth/register"
-                >
-                  {" "}
-                  Registrarse
-                </Link>
+                  type="primary-solid"
+                />
               </>
             )}
           </div>
 
-          <div onClick={handleClick} className="md:hidden">
+          <div onClick={handleClick} className="sm:hidden">
             {!navOpen ? (
-              <Bars3Icon className="w-5 cursor-pointer" />
+              <Bars3Icon className="w-5 text-white cursor-pointer" />
             ) : (
-              <XMarkIcon className="w-5 cursor-pointer" />
+              <XMarkIcon className="w-5 text-white cursor-pointer" />
             )}
           </div>
         </div>
 
-        <div className="relative">
-          <ul
-            className={
-              !navOpen ? "hidden" : "bg-zinc-100 w-full px-8 md:hidden"
-            }
-          >
-            <a
-              onClick={() => setNavOpen(!navOpen)}
-              href="#"
-              className="border-b-2 block w-full p-2 border-zinc-300 hover:text-red-700"
-            >
-              Inicio
-            </a>
-            <a
-              onClick={() => setNavOpen(!navOpen)}
-              href="#"
-              className="border-b-2 block w-full p-2 border-zinc-300 hover:text-red-700"
-            >
-              Nosotros
-            </a>
-            <a
-              onClick={() => setNavOpen(!navOpen)}
-              href="#"
-              className="border-b-2 block w-full p-2 border-zinc-300 hover:text-red-700 items-center"
-            >
-              Noticias
-            </a>
-
-            <div className="flex flex-col my-4">
+        <div className="relative bg-white w-full shadow-lg">
+          <ul className={!navOpen ? "hidden" : "px-8 sm:hidden"}>
+            <div className="flex flex-col py-12">
               {auth.Authenticate ? (
-                <button
-                  className="bg-red-600 text-slate-200 text-center border border-red-600 rounded-md w-full py-2 mb-4 transition-colors"
-                  onClick={handleCloseSesion}
-                >
-                  Cerrar Sesión
-                </button>
+                <>
+                  {auth.Role === "Admin" ? (
+                    <>
+                      <Button
+                        name="Dashboard"
+                        href="/admin/dashboard"
+                        type="secondary-outline"
+                      />
+
+                      <div className="py-2"></div>
+                    </>
+                  ) : null}
+                  <button
+                    className="bg-red-600 border border-red-600 rounded-md text-center text-white w-full py-2 transition-colors"
+                    onClick={handleCloseSesion}
+                  >
+                    Cerrar Sesión
+                  </button>
+                </>
               ) : (
                 <>
-                  {" "}
-                  <Link
-                    className="bg-transparent text-red-600 text-center border border-red-600 rounded-md w-full py-2 mb-4 transition-colors"
-                    href="#"
-                  >
-                    Acceder
-                  </Link>
-                  <Link
-                    className="bg-red-600 text-slate-200 text-center border border-red-600 rounded-md w-full py-2 mb-4 transition-colors"
-                    href="#"
-                  >
-                    Registrarse
-                  </Link>
+                  <Button
+                    name="Acceder"
+                    href="/auth/login"
+                    type="secondary-outline"
+                  />
+                  <div className="py-2"></div>
+                  <Button
+                    name="Registrarse"
+                    href="/auth/register"
+                    type="primary-solid"
+                  />
                 </>
               )}
             </div>

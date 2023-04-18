@@ -1,17 +1,9 @@
 import Head from "next/head";
 import Navbar from "./navbar";
-import Footer from "./footer";
-import { useEffect } from "react";
 import { useAuth } from "@/context/authContext";
-import { useRouter } from "next/router";
 
 export default function Layout({ children, title, description }) {
-  const router = useRouter();
-  const { auth, loading } = useAuth();
-  useEffect(() => {
-    console.log("layout")
-    console.log(auth)
-  }, []);
+  const { auth } = useAuth();
 
   return (
     <>
@@ -19,10 +11,22 @@ export default function Layout({ children, title, description }) {
         <title>{`Challenge - ${title}`}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+
       <Navbar />
-      {/* <Header/> */}
+      <header className="bg-gray-200 shadow-lg">
+        <div className="w-full flex justify-between items-center px-4 py-4 sm:px-6 lg:px-8">
+          <h2 className="text-md sm:text-xl md:text-2xl lg:text-3xl tracking-tight text-gray-900">
+            {title}
+          </h2>
+          {auth.Authenticate ? (
+            <h3 className="text-xs sm:text-lg md:text-xl lg:text-2xl">
+              Bienvenido {auth.Name}
+            </h3>
+          ) : null}
+        </div>
+      </header>
+
       {children}
-      <Footer />
     </>
   );
 }

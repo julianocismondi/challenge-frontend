@@ -1,11 +1,22 @@
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import axios from "axios";
+import { useRouter } from "next/router";
+import { useAuth } from "@/context/authContext";
+import ClientAxios from "@/config/clientAxios";
 
 export default function Login() {
+  const { auth, setUpdateToken } = useAuth();
+  const { push } = useRouter();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    if (token) {
+      push("/");
+    }
+  }, []);
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -13,21 +24,22 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await axios.post(
-      "https://localhost:7024/Auth/Login",
+    const response = await ClientAxios.post(
+      "/Auth/Login",
       credentials
     );
 
     if (response.status == 200) {
       const { data } = response;
       localStorage.setItem("Token", data);
-      
-      window.location.href = "/";
+
+      push("/");
+      setUpdateToken(true);
     }
   };
 
   return (
-    <div className="w-full h-screen flex">
+    <div className="w-full h-screen flex bg-white">
       <div className="grid grid-cols-1 w-4/5 sm:w-3/5 md:w-2/5 lg:w-2/6 mx-auto">
         <div className="flex flex-col justify-center items-center">
           <div className="w-full">
@@ -45,7 +57,7 @@ export default function Login() {
                   type="email"
                   name="email"
                   id="email"
-                  placeholder="tucorreo@gmail.com"
+                  placeholder="Ingrese su correo"
                   className="w-full p-2 border border-red-700 rounded-md placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-700"
                   onChange={handleChange}
                   // onClick={() => setAlert({})}
@@ -88,21 +100,21 @@ export default function Login() {
                 <input
                   type="submit"
                   value="Iniciar Sesión"
-                  className="cursor-pointer text-zinc-200 border bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700 rounded-md w-full py-2 transition-colors"
+                  className="cursor-pointer text-white border bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700 rounded-md w-full py-2 transition-colors"
                 />
               </div>
             </form>
-            <nav className="lg:flex lg:justify-center">
-              <Link
-                className="block text-center my-2 text-sm"
-                href="/auth/register"
-              >
-                ¿No tienes una cuenta?{" "}
-                <span className="text-red-700 font-medium hover:underline">
+            <div className="flex justify-center">
+              <div className="flex items-center">
+                <p className="mr-1">¿No tienes una cuenta? </p>
+                <Link
+                  className="text-red-700 font-medium hover:underline"
+                  href="/auth/register"
+                >
                   Regístrate
-                </span>
-              </Link>
-            </nav>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
