@@ -167,7 +167,22 @@ export default function Register() {
                 <input
                   type="submit"
                   value="Registrarse"
-                  className="text-slate-200 border bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700 rounded-md w-full py-2 transition-colors cursor-pointer"
+                  disabled={
+                    register.name === "" ||
+                    register.email === "" ||
+                    register.password === "" ||
+                    register.repeatPassword === ""
+                      ? true
+                      : false
+                  }
+                  className={`cursor-pointer text-white border bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700 rounded-md w-full py-2 transition-colors ${
+                    register.name === "" ||
+                    register.email === "" ||
+                    register.password === "" ||
+                    register.repeatPassword === ""
+                      ? "opacity-50 cursor-not-allowed"
+                      : null
+                  }`}
                 />
               </div>
             </form>

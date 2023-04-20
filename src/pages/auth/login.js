@@ -4,12 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useAuth } from "@/context/authContext";
 import ClientAxios from "@/config/clientAxios";
+import Alert from "@/components/alert";
 
 export default function Login() {
   const { auth, setUpdateToken } = useAuth();
   const { push } = useRouter();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
+
+  const initialStateError = { title: "", error: false, msg: "" };
+  const [showError, setShowError] = useState(initialStateError);
 
   useEffect(() => {
     const token = localStorage.getItem("Token");
@@ -24,17 +28,33 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await ClientAxios.post(
-      "/Auth/Login",
-      credentials
-    );
+    try {
+      const response = await ClientAxios.post("/Auth/Login", credentials);
 
-    if (response.status == 200) {
-      const { data } = response;
-      localStorage.setItem("Token", data);
+      if (response.status === 200) {
+        const { data } = response;
+        localStorage.setItem("Token", data);
 
-      push("/");
-      setUpdateToken(true);
+        push("/");
+        setUpdateToken(true);
+        setShowError(initialStateError);
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        setShowError({
+          title: "Error login",
+          error: true,
+          msg: error.response.data.message,
+        });
+      }
+
+      if (error.response.status === 404) {
+        setShowError({
+          title: "Error login",
+          error: true,
+          msg: error.response.data.message,
+        });
+      }
     }
   };
 
@@ -42,6 +62,9 @@ export default function Login() {
     <div className="w-full h-screen flex bg-white">
       <div className="grid grid-cols-1 w-4/5 sm:w-3/5 md:w-2/5 lg:w-2/6 mx-auto">
         <div className="flex flex-col justify-center items-center">
+          {showError.error ? (
+            <Alert title="Error" message={showError.msg} type="error" />
+          ) : null}
           <div className="w-full">
             <h1 className="text-black font-bold text-4xl md:text-5xl text-center py-4">
               Challenge
@@ -60,7 +83,7 @@ export default function Login() {
                   placeholder="Ingrese su correo"
                   className="w-full p-2 border border-red-700 rounded-md placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-700"
                   onChange={handleChange}
-                  // onClick={() => setAlert({})}
+                  onClick={() => setShowError(initialStateError)}
                 />
               </div>
 
@@ -90,17 +113,26 @@ export default function Login() {
                     placeholder="Ingrese su contraseña"
                     className="w-full p-2 border border-red-700 rounded-md placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-red-700"
                     onChange={handleChange}
+                    onClick={() => setShowError(initialStateError)}
                     autoComplete="current-password"
                   />
                 </div>
               </div>
-              {/* {alert.msg && <Alert alert={alert} />} */}
 
               <div className="my-5">
                 <input
                   type="submit"
                   value="Iniciar Sesión"
-                  className="cursor-pointer text-white border bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700 rounded-md w-full py-2 transition-colors"
+                  disabled={
+                    credentials.email === "" || credentials.password === ""
+                      ? true
+                      : false
+                  }
+                  className={`cursor-pointer text-white border bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700 rounded-md w-full py-2 transition-colors ${
+                    credentials.email === "" || credentials.password === ""
+                      ? "opacity-50 cursor-not-allowed"
+                      : null
+                  }`}
                 />
               </div>
             </form>
