@@ -1,22 +1,29 @@
 import Layout from "@/components/layout";
 import { Fragment, useEffect } from "react";
-import { useAuth } from "@/context/authContext";
+import { useAuthContext } from "@/context/authenticate/authContext";
+import { useUserContext } from "@/context/users/userContext";
 import { useRouter } from "next/router";
 import Datatable from "@/components/datatable";
 
-const Dashboard = () => {
+export default function Dashboard() {
   const { push } = useRouter();
-  const { auth, loading } = useAuth();
-  useEffect(() => {
-    if (!loading) {
-      if (auth.Authenticate && auth.Role === "Admin") {
-      } else {
-        push("/");
-      }
-    }
-  }, [loading]);
+  const { getUsers } = useUserContext();
+  const { authUser, getProfile } = useAuthContext();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getUsers();
+    const token = localStorage.getItem("token");
+    if (!authUser.authenticate && token) {
+      getProfile();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (authUser.data.role === "User") {
+      push("/");
+    }
+  }, [authUser]);
+
   return (
     <>
       <Layout title={"Dashboard"}>
@@ -30,6 +37,4 @@ const Dashboard = () => {
       </Layout>
     </>
   );
-};
-
-export default Dashboard;
+}

@@ -1,66 +1,21 @@
-import { useState, useEffect } from "react";
-import ClientAxios from "@/config/clientAxios";
-import ModalFormEdit from "./modalFormEdit";
+import Button from "./button";
+import { useUserContext } from "@/context/users/userContext";
+import Spinner from "./spinner";
 
 const Datatable = () => {
-  const [showFormEdit, setShowFormEdit] = useState(false);
-  const [userId, setUserId] = useState(0);
-  const [users, setUsers] = useState([{}]);
+  const { users, getUsers, deleteUser } = useUserContext();
 
-  useEffect(() => {
-    const token = localStorage.getItem("Token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    const userContext = async () => {
-      try {
-        const response = await ClientAxios("/User/GetUsers", config);
-        const { data } = response;
-        setUsers(data);
-      } catch (error) {}
-    };
-    userContext();
-  }, []);
-
-  const deleteUser = (id) => {
-    const token = localStorage.getItem("Token");
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    if (confirm(`Estas seguro de eliminar al usuario ${id}`)) {
-      const deleteAsync = async () => {
-        const response = await ClientAxios.delete(
-          `/User/DeleteUser/${id}`,
-          config
-        );
-        if (response.status === 204) {
-          const getUsersAsync = async () => {
-            const response = await ClientAxios("/User/GetUsers", config);
-            const { data } = response;
-            setUsers(data);
-          };
-          getUsersAsync();
-        }
-      };
-
-      deleteAsync();
-    }
+  const handleClick = (userId) => {
+    deleteUser(userId);
   };
 
-  const userEdit = (id) => {
-    setShowFormEdit(true);
-    setUserId(id);
-  };
+  if (users.loading) {
+    return (<Spinner />);
+  }
 
   return (
     <>
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <h2 className="text-4xl font-bold text-gray-800 py-2">Usuarios</h2>
         <div className="flex flex-col">
           <div className="overflow-x-auto shadow-xl sm:rounded-lg">
@@ -102,7 +57,7 @@ const Datatable = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                    {users.map((user, index) => {
+                    {users.data.map((user, index) => {
                       return (
                         <tr className="hover:bg-gray-700" key={index + 1}>
                           <td className="py-4 px-6 text-sm font-medium text-white text-center">
@@ -118,22 +73,22 @@ const Datatable = () => {
                             {user.roleId === 1 ? "Admin" : "User"}
                           </td>
                           <td className="py-4 px-6 text-sm font-medium text-center">
-                            <button
-                              className="text-gray-500 mr-2 hover:underline"
-                              onClick={() => {
-                                userEdit(user.id);
-                              }}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => {
-                                deleteUser(user.id);
-                              }}
-                              className="text-red-500 mr-2  hover:underline"
-                            >
-                              Delete
-                            </button>
+                            <div className="flex flex-col justify-center gap-4 sm:flex-row">
+                              {" "}
+                              <Button
+                                name="Editar"
+                                href={`/user/${user.id}`}
+                                type="secondary-solid"
+                              />
+                              <button
+                                onClick={() => {
+                                  handleClick(user.id);
+                                }}
+                                className="bg-red-600 border-2 border-red-600  text-white text-center font-medium rounded-md py-2 px-8 hover:bg-transparent hover:text-red-600 transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -145,14 +100,6 @@ const Datatable = () => {
           </div>
         </div>
       </div>
-      {
-        <ModalFormEdit
-          open={showFormEdit}
-          setOpen={setShowFormEdit}
-          setUsers={setUsers}
-          userId={userId}
-        />
-      }
     </>
   );
 };

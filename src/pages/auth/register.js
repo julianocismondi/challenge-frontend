@@ -2,10 +2,12 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import ClientAxios from "@/config/clientAxios";
+import { useAuthContext } from "@/context/authenticate/authContext";
 
 export default function Register() {
   const { push } = useRouter();
+
+  const {registerUser } = useAuthContext();
   const [register, setRegister] = useState({
     name: "",
     email: "",
@@ -45,25 +47,14 @@ export default function Register() {
     }
 
     //Creando usuario
-    const objUser = {
+    registerUser({
       name,
       email,
       password,
-    };
-
-    try {
-      const response = await ClientAxios.post("/User/CreateUser", objUser);
-
-      if (response.status == 204) {
-        push("/auth/login");
-      }
-      setRegister({});
-    } catch (error) {
-      alert("Error al crear usuario");
-    }
+    });
   };
   return (
-    <div className=" sm w-full h-screen flex justify-center items-center">
+    <div className="sm w-full h-screen flex justify-center items-center">
       <div className="grid grid-cols-1 w-[80%] sm:w-4/6 md:w-1/2 lg:w-2/6">
         <div className="flex flex-col justify-center items-center">
           <div className="w-full">
