@@ -16,7 +16,7 @@ export default function Home() {
   }, []);
   return (
     <>
-      <Layout title={"Inicio"} description={"Challenge web"}>
+      <Layout title={"Inicio"} description={"Home Page Challenge web"}>
         <main>
           <div className="mx-auto max-w-md sm:max-w-lg md:max-w-2xl py-28 px-2 sm:py-6 sm:px-8 md:py-8">
             <div className="hidden sm:mb-8 sm:flex sm:justify-center"></div>

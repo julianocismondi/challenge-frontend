@@ -50,7 +50,7 @@ export default function User() {
   };
   return (
     <>
-      <Layout title={"Editar Usuario"}>
+      <Layout title={"Editar Usuario"} description={"Pagina de edicion de usuario de challenge app"}>
         <Fragment>
             <div className="flex justify-center py-6 sm:px-6 lg:px-8">
               <div className="mt-2">
@@ -58,9 +58,9 @@ export default function User() {
                   <div className="mb-2">
                     <label
                       htmlFor="email"
-                      className="text-slate-800 block text-md"
+                      className="text-slate-800 block text-md font-medium"
                     >
-                      Name
+                      Nombre
                     </label>
 
                     <input
@@ -76,9 +76,9 @@ export default function User() {
                   <div className="mb-2">
                     <label
                       htmlFor="password"
-                      className="text-slate-800 block text-md"
+                      className="text-slate-800 block text-md font-medium"
                     >
-                      Email
+                      Correo
                     </label>
                     <div className="relative block">
                       <input
