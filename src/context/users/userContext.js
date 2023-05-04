@@ -1,7 +1,7 @@
 import { createContext, useContext, useReducer } from "react";
-import ClientAxios from "@/config/clientAxios";
 import userReducer from "@/context/users/userReducer";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 export const UserContext = createContext();
 
@@ -19,12 +19,29 @@ export const UserProvider = ({ children }) => {
 
   const [users, dispatch] = useReducer(userReducer, initialState);
 
+  //Axios config
+  const clientConfig = () => {
+    if (typeof Storage !== "undefined") {
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      return headers;
+    }
+  };
+
+  const clientAxios = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_BASE_PATH,
+    headers: clientConfig(),
+  });
+
   //Obtiene una lista de usuarios
   const getUsers = async () => {
     dispatch({ type: "GET_USERS_REQUEST" });
 
     try {
-      const response = await ClientAxios("/User/GetUsers");
+      const response = await clientAxios("/User/GetUsers");
       dispatch({ type: "GET_USERS_SUCCESS", payload: response.data });
     } catch (error) {
       dispatch({ type: "GET_USERS_ERROR", payload: error.message });
@@ -36,7 +53,7 @@ export const UserProvider = ({ children }) => {
     dispatch({ type: "GET_USER_BY_ID_REQUEST" });
 
     try {
-      const response = await ClientAxios(`/User/GetUserById/${userId}`);
+      const response = await clientAxios(`/User/GetUserById/${userId}`);
       dispatch({ type: "GET_USER_BY_ID_SUCCESS", payload: [response.data] });
     } catch (error) {
       dispatch({ type: "GET_USER_BY_ID_ERROR", payload: error.message });
@@ -46,7 +63,7 @@ export const UserProvider = ({ children }) => {
   //Editar usuario
   const editUser = async (user) => {
     try {
-      const response = await ClientAxios.put("/User/UpdateUser", user);
+      const response = await clientAxios.put("/User/UpdateUser", user);
       localStorage.removeItem("editUserId");
       push("/admin/dashboard");
       dispatch({ type: "EDIT_USER_SUCCESS", payload: response.data });
@@ -60,7 +77,7 @@ export const UserProvider = ({ children }) => {
   const deleteUser = async (userId) => {
     dispatch({ type: "DELETE_USER_REQUEST" });
     try {
-      const response = await ClientAxios.delete(`/User/DeleteUser/${userId}`);
+      const response = await clientAxios.delete(`/User/DeleteUser/${userId}`);
 
       dispatch({ type: "DELETE_USER_SUCCESS", payload: initialState.data });
       getUsers();

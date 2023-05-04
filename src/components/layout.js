@@ -14,6 +14,7 @@ export default function Layout({ children, title, description }) {
     <>
       <Head>
         <title>{`Challenge - ${title}`}</title>
+        <meta name="description" content={`${description}`} key="desc" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
