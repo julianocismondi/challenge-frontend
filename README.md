@@ -1,8 +1,6 @@
 
 ## Getting Started
 First, command npm install
-
-
 Second, run the development server:
 
 ```bash

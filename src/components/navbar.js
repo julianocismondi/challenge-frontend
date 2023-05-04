@@ -1,27 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import { useAuth } from "@/context/authContext";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useAuthContext } from "@/context/authenticate/authContext";
 import Button from "./button";
 
 export default function Navbar() {
-  const { auth, setAuth, initialState, setUpdateToken } = useAuth();
+  const { authUser, closeSession } = useAuthContext();
   const { push } = useRouter();
   const [navOpen, setNavOpen] = useState(false);
 
-  useEffect(() => {}, []);
-
   const handleCloseSesion = () => {
-    localStorage.clear();
-    setAuth(initialState);
-    setUpdateToken(false);
+    closeSession();
     setNavOpen(false);
-    push("/");
   };
 
-  const navBarTransparentClass =
-    "w-full h-16 fixed bg-trasparent z-30 duration-300";
-  const navBarClass = "w-full h-16 fixed bg-zinc-100 z-30 duration-300";
   const handleClick = () => setNavOpen(!navOpen);
   return (
     <>
@@ -40,13 +32,13 @@ export default function Navbar() {
           </div>
 
           <div className="hidden sm:flex">
-            {auth.Authenticate ? (
+            {authUser.authenticate ? (
               <>
-                {auth.Role === "Admin" ? (
+                {authUser.data.role === "Admin" ? (
                   <>
                     <Button
                       className="mr-2"
-                      name="Dasboard"
+                      name="Dashboard"
                       href="/admin/dashboard"
                       type="secondary-solid"
                     />
@@ -90,9 +82,9 @@ export default function Navbar() {
         <div className="relative bg-white w-full shadow-lg">
           <ul className={!navOpen ? "hidden" : "px-8 sm:hidden"}>
             <div className="flex flex-col py-12">
-              {auth.Authenticate ? (
+              {authUser.authenticate ? (
                 <>
-                  {auth.Role === "Admin" ? (
+                  {authUser.data.role === "Admin" ? (
                     <>
                       <Button
                         name="Dashboard"
