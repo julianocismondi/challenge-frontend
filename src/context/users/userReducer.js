@@ -16,22 +16,22 @@ import {
 export default function userReducer(state, action) {
   switch (action.type) {
     case GET_USERS_REQUEST:
-      return { ...state,data: state.data, loading: true };
+      return { ...state, loading: true };
 
     case GET_USERS_SUCCESS:
       return { ...state, data: action.payload, loading: false };
 
     case GET_USERS_ERROR:
-      return { ...state, loading: false };
+      return { ...state, loading: false, error: true };
 
     case GET_USER_BY_ID_REQUEST:
-      return { ...state, data: state, loading: true };
+      return { ...state, loading: true };
 
     case GET_USER_BY_ID_SUCCESS:
       return { ...state, data: action.payload, loading: false };
 
     case GET_USER_BY_ID_ERROR:
-      return { ...state, loading: false };
+      return { ...state, loading: false, error: true};
 
     case EDIT_USER_REQUEST:
       return { ...state, loading: true };

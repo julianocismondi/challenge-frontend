@@ -11,7 +11,7 @@ export const UserProvider = ({ children }) => {
   //Estado inicial
   const initialState = {
     data: [],
-    loading: true,
+    loading: false,
     error: false,
   };
 
