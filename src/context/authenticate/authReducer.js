@@ -17,7 +17,7 @@ export default function authReducer(state, action) {
       return { ...state, authenticate: false, loading: true };
 
     case LOGIN_SUCCESS:
-      return { ...state, authenticate: true, loading: false };
+      return { ...state, data: action.payload, authenticate: true, loading: false };
 
     case LOGIN_ERROR:
       return { ...state, data: action.payload, loading: false, error: true };

@@ -30,11 +30,10 @@ export default function Navbar() {
               <span className="text-white">Challenge</span>
             </h1>
           </div>
-
           <div className="hidden sm:flex">
             {authUser.authenticate ? (
               <>
-                {authUser.data.role === "Admin" ? (
+                {authUser.data.role.name === "Admin" ? (
                   <>
                     <Button
                       className="mr-2"
@@ -84,7 +83,7 @@ export default function Navbar() {
             <div className="flex flex-col py-12">
               {authUser.authenticate ? (
                 <>
-                  {authUser.data.role === "Admin" ? (
+                  {authUser.data.role.name === "Admin" ? (
                     <>
                       <Button
                         name="Dashboard"
